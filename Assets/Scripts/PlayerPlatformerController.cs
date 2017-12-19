@@ -11,6 +11,8 @@ public class PlayerPlatformerController : PhysicsObject
 	private SpriteRenderer spriteRenderer;
 	private Animator animator;
 
+    private bool doubleJump = true;
+
 	// Use this for initialization
 	void Awake()
 	{
@@ -31,12 +33,20 @@ public class PlayerPlatformerController : PhysicsObject
 
 	protected override void ComputeVelocity()
 	{
+        if (grounded) {
+            doubleJump = true;
+        }
+
 		Vector2 move = Vector2.zero;
 
 		move.x = Input.GetAxis("Horizontal");
 
-		if (Input.GetButtonDown("Jump")/* && grounded*/)
+        if (Input.GetButtonDown("Jump") && (grounded || doubleJump))
 		{
+            if (!grounded) {
+                doubleJump = false;
+            }
+
 			velocity.y = jumpTakeOffSpeed;
 		}
 		else if (Input.GetButtonUp("Jump"))
