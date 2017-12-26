@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayerPlatformerController : PhysicsObject
 {
+    [SerializeField]
+	private float maxSpeed = 7;
 
-	public float maxSpeed = 7;
-	public float jumpTakeOffSpeed = 7;
+    [SerializeField]
+	private float jumpTakeOffSpeed = 7;
 
 	private SpriteRenderer spriteRenderer;
 	private Animator animator;
@@ -21,14 +23,25 @@ public class PlayerPlatformerController : PhysicsObject
 	}
 
 	protected override void ComputeCustomAction()
-	{     
-		if (Input.GetButtonDown("Fire1"))
-		{
-			animator.SetBool("attack", true);
-		} else if (Input.GetButtonUp("Fire1"))
-		{
-			animator.SetBool("attack", false);
-		}
+	{
+        if (Input.GetButtonDown("Fire1"))
+        {
+            animator.SetTrigger("throw");
+        }
+
+        if (Input.GetButtonDown("Fire2"))
+        {
+            animator.SetTrigger("attack");
+        }
+
+        if (Input.GetButtonDown("Fire3"))
+        {
+            animator.SetBool("crouch", true);
+        } 
+        else if (Input.GetButtonUp("Fire3"))
+        {
+            animator.SetBool("crouch", false);
+        }
 	}
 
 	protected override void ComputeVelocity()
@@ -57,7 +70,7 @@ public class PlayerPlatformerController : PhysicsObject
 			}
 		}
 
-		bool flipSprite = (spriteRenderer.flipX ? (move.x > 0.01f) : (move.x < 0.01f));
+		bool flipSprite = (spriteRenderer.flipX ? (move.x > 0.01f) : (move.x < -0.01f));
 		if (flipSprite)
 		{
 			spriteRenderer.flipX = !spriteRenderer.flipX;
@@ -65,6 +78,7 @@ public class PlayerPlatformerController : PhysicsObject
 
 		animator.SetBool("grounded", grounded);
         animator.SetFloat("velocityX", Mathf.Abs(velocity.x) / maxSpeed);
+        animator.SetFloat("velocityY", velocity.y);
 
 		targetVelocity = move * maxSpeed;
 	}
